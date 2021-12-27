@@ -20,7 +20,7 @@
         "select"
     ],
     "require": {
-        "php": "^8.0",
+        "php": "^7.4|^8.0",
         "laravel/framework": "^8.0",
         "livewire/livewire": "^2.5"
     },
