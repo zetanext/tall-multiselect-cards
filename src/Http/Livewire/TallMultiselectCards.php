@@ -68,6 +68,15 @@ class TallMultiselectCards extends Component
             });
     }
 
+    public function resetState(): void
+    {
+        $this->searchTerm = '';
+        $this->state = $this->loadData();
+
+        $this->clearSelected();
+    }
+
+
     public function loadMoreData(): void
     {
         if ($this->page < $this->maxPages) {
