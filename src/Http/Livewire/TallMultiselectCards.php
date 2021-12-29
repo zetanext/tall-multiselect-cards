@@ -20,6 +20,10 @@ class TallMultiselectCards extends Component
     public $state = [];
     public $searchTerm = '';
 
+    protected function getListeners()
+    {
+        return ['tall-multiselect-cards-send-selected-' . $this->identifier => 'sendSelected'];
+    }
 
     public function mount(string $identifier): void
     {
