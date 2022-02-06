@@ -22,7 +22,11 @@ class TallMultiselectCards extends Component
 
     protected function getListeners()
     {
-        return ['tall-multiselect-cards-send-selected-' . $this->identifier => 'sendSelected'];
+        return [
+            'tall-multiselect-cards-get-selected-' . $this->identifier => 'getSelected',
+            'tall-multiselect-cards-set-selected-' . $this->identifier => 'setSelected',
+            'tall-multiselect-cards-reset-state-' . $this->identifier => 'resetState',
+        ];
     }
 
     public function mount(string $identifier): void
@@ -53,7 +57,7 @@ class TallMultiselectCards extends Component
         $this->state[$id]['checked'] = !$this->state[$id]['checked'];
     }
 
-    public function sendSelected(): void
+    public function getSelected(): void
     {
         $this->emit('tall-multiselect-cards-' . $this->identifier, collect($this->state)
             ->where('checked', true)
@@ -61,6 +65,36 @@ class TallMultiselectCards extends Component
             ->toArray());
 
         $this->clearSelected();
+    }
+
+    public function setSelected(array $items): void
+    {
+        $selectedAttributes = collect($this->attributes)->filter()->values()->toArray();
+
+        if (!empty($items)) {
+            if ($this::hasMacro('query')) {
+                $query = $this::query($this->model, $selectedAttributes);
+            } else {
+                $query = $this->model::select($selectedAttributes);
+            }
+            $preSelectedItems = $query->WhereIn('id', $items)->get()->mapWithKeys(
+                function ($item) {
+                    return [
+                        $item[$this->attributes['uniqueId']] => [
+                            'primary' => !empty($this->attributes['primary']) ? $item[$this->attributes['primary']] : NULL,
+                            'secondary' => !empty($this->attributes['secondary']) ? $item[$this->attributes['secondary']] : NULL,
+                            'optional' => !empty($this->attributes['optional']) ? $item[$this->attributes['optional']] : NULL,
+                            'checked' => true,
+                        ]
+                    ];
+                }
+            );
+            $this->state = $preSelectedItems
+                ->merge(collect($this->state)
+                ->reject(function ($value) {
+                    return $value['checked'] == true;}))
+                ->toArray();
+        }
     }
 
     public function clearSelected(): void
