@@ -93,6 +93,9 @@ class TallMultiselectCards extends Component
                 ->merge(collect($this->state)
                 ->reject(function ($value) {
                     return $value['checked'] == true;}))
+                ->unique(function ($value) {
+                    return $value['primary'].$value['secondary'].$value['optional'];
+                })
                 ->toArray();
         }
     }
