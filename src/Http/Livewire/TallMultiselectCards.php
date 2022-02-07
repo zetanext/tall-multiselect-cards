@@ -88,15 +88,8 @@ class TallMultiselectCards extends Component
                         ]
                     ];
                 }
-            );
-            $this->state = $preSelectedItems
-                ->merge(collect($this->state)
-                ->reject(function ($value) {
-                    return $value['checked'] == true;}))
-                ->unique(function ($value) {
-                    return $value['primary'].$value['secondary'].$value['optional'];
-                })
-                ->toArray();
+            )->toArray();
+            $this->state = $preSelectedItems + $this->state;
         }
     }
 
